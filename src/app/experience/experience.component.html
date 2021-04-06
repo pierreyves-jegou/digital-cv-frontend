@@ -1,0 +1,38 @@
+<form [formGroup]="formGroup"  class="experience-form" (ngSubmit)="onSubmit()">
+  <mat-form-field class="example-full-width">
+    <mat-label>Company</mat-label>
+    <input matInput type="text" formControlName="company" >
+  </mat-form-field>
+  <mat-form-field class="example-full-width">
+    <mat-label>job title</mat-label>
+    <input matInput type="text" formControlName="jobTitle" >
+  </mat-form-field>
+  <mat-form-field class="example-full-width">
+    <mat-label>from</mat-label>
+    <input matInput type="date" formControlName="from" >
+  </mat-form-field>
+  <mat-form-field class="example-full-width">
+    <mat-label>from</mat-label>
+    <input matInput type="date" formControlName="to" >
+  </mat-form-field>
+
+  <div formArrayName="duties" *ngFor="let item of getDutiesControls(); let i = index;">
+        <mat-form-field >
+          <mat-label>duty</mat-label>
+          <input matInput type="text" [formControlName]="i">
+        </mat-form-field>
+
+        <button matIconButton (click)="addDuty(i)">
+          <mat-icon>add_to_queue</mat-icon>
+        </button>
+        <button matIconButton (click)="removeDuty(i)">
+          <mat-icon>delete</mat-icon>
+        </button>
+  </div>
+
+  <div>
+    <button matIconButton type="submit">
+      <mat-icon>play_arrow</mat-icon>
+    </button>
+  </div>
+</form>

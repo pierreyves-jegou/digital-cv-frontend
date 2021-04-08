@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Experience} from '../model/experience';
+import {Duty} from '../model/duty';
 
 @Component({
   selector: 'app-experience',
@@ -9,6 +11,7 @@ import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validat
 export class ExperienceComponent implements OnInit {
 
   formGroup: FormGroup;
+  @Output() newExperienceEvent = new EventEmitter<Experience>();
 
   constructor(private formBuilder: FormBuilder) {
 
@@ -58,6 +61,32 @@ export class ExperienceComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if(this.formGroup.valid){
+      const duties: Duty[] = this.getDutiesControls()
+        .filter(x => x.value)
+        .map(x => new Duty(x.value))
+        .reduce(function(acc, currentValue) {
+          if (acc.indexOf(currentValue) === -1) {
+            acc.push(currentValue);
+          }
+          return acc;
+        }, new Array());
+
+
+
+      const exp: Experience = new Experience(
+        null,
+        this.formGroup.get('company')?.value,
+        null,
+        this.formGroup.get('jobTitle')?.value,
+        this.formGroup.get('from')?.value,
+        this.formGroup.get('to')?.value,
+        duties);
+
+      console.log(exp);
+    }else{
+      console.log("not valide");
+    }
     console.log(this.formGroup);
   }
 

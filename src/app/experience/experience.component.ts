@@ -1,7 +1,9 @@
-import {Component, OnInit, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, Output, EventEmitter, Input} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {Experience} from '../model/experience';
-import {Duty} from '../model/duty';
+import {IExperience} from '../model/IExperience';
+import {IDuty} from '../model/IDuty';
+import {Experience} from '../model/impl/experience';
+import {Duty} from '../model/impl/duty';
 
 @Component({
   selector: 'app-experience',
@@ -11,12 +13,13 @@ import {Duty} from '../model/duty';
 export class ExperienceComponent implements OnInit {
 
   formGroup: FormGroup;
-  @Output() newExperienceEvent = new EventEmitter<Experience>();
+  @Input() initExperience!: Experience;
+  @Output() experience = new EventEmitter<IExperience>();
 
   constructor(private formBuilder: FormBuilder) {
-
+    console.log('constr expe');
     this.formGroup = this.formBuilder.group({
-      company : '',
+      companyLabel : this.initExperience?.companyLabel != null ? this.initExperience?.companyLabel : null,
       jobTitle : '',
       from : ['' , Validators.required],
       to : [''],
@@ -24,11 +27,29 @@ export class ExperienceComponent implements OnInit {
         this.formBuilder.control('')
       ])
     });
-    this.observeDutiesControls();
+
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void{
+    console.log('init expe');
+    this.initFormGroup();
+    this.addNPlus1Duty();
   }
+
+  initFormGroup(): void{
+    const companyLabel = this.formGroup.get('companyLabel') as FormControl;
+    companyLabel.setValue(this.initExperience?.companyLabel != null ? this.initExperience?.companyLabel : '');
+    const jobTitleControl = this.formGroup.get('jobTitle') as FormControl;
+    jobTitleControl.setValue(this.initExperience?.jobTitleLabel != null ? this.initExperience?.jobTitleLabel : '');
+
+    const dutiesControl = this.formGroup.get('duties') as FormArray;
+    if (this.initExperience?.duties) {
+      this.initExperience.duties.forEach((value, key) => {
+        dutiesControl.insert(key, this.formBuilder.control(value));
+        // dutiesControl.push(this.formBuilder.control(duty));
+      });
+    }
+}
 
   addDuty(position: number): void{
     const dutiesControls = this.getDutiesControls();
@@ -46,7 +67,7 @@ export class ExperienceComponent implements OnInit {
     return duties.controls;
   }
 
-  observeDutiesControls(): void{
+  addNPlus1Duty(): void{
     const duties = this.formGroup.get('duties') as FormArray;
     duties.valueChanges.subscribe(values => {
       const valuesCast = values as string[];
@@ -61,11 +82,11 @@ export class ExperienceComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if(this.formGroup.valid){
-      const duties: Duty[] = this.getDutiesControls()
+    if (this.formGroup.valid) {
+      const duties: IDuty[] = this.getDutiesControls()
         .filter(x => x.value)
         .map(x => new Duty(x.value))
-        .reduce(function(acc, currentValue) {
+        .reduce((acc, currentValue) => {
           if (acc.indexOf(currentValue) === -1) {
             acc.push(currentValue);
           }
@@ -74,18 +95,19 @@ export class ExperienceComponent implements OnInit {
 
 
 
-      const exp: Experience = new Experience(
+      const exp: IExperience = new Experience(
         null,
-        this.formGroup.get('company')?.value,
-        null,
-        this.formGroup.get('jobTitle')?.value,
+        this.formGroup.get('companyLabel')?.value,
+        new Array(),
         this.formGroup.get('from')?.value,
         this.formGroup.get('to')?.value,
-        duties);
-
+        null,
+        this.formGroup.get('jobTitle')?.value
+      );
+      this.experience.emit(exp);
       console.log(exp);
     }else{
-      console.log("not valide");
+      console.log('not valide');
     }
     console.log(this.formGroup);
   }

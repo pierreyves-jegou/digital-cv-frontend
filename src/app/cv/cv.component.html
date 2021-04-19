@@ -1,2 +1,4 @@
-<!--<app-profil></app-profil>-->
-<app-experience></app-experience>
+<div *ngFor="let item of experiences| async; let i = index;">
+  <app-experience [initExperience]="item" ></app-experience>
+</div>
+

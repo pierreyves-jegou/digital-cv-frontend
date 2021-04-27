@@ -1,5 +1,5 @@
 import {Component, OnInit, Output, EventEmitter, Input} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, ControlValueAccessor, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {IExperience} from '../model/IExperience';
 import {IDuty} from '../model/IDuty';
 import {Experience} from '../model/impl/experience';
@@ -10,14 +10,18 @@ import {Duty} from '../model/impl/duty';
   templateUrl: './experience.component.html',
   styleUrls: ['./experience.component.css']
 })
-export class ExperienceComponent implements OnInit {
+export class ExperienceComponent implements OnInit, ControlValueAccessor {
 
   formGroup: FormGroup;
   @Input() initExperience!: Experience;
+  // @ts-ignore
+  @Input() formParent: FormGroup;
   @Output() experience = new EventEmitter<IExperience>();
+
 
   constructor(private formBuilder: FormBuilder) {
     console.log('constr expe');
+
     this.formGroup = this.formBuilder.group({
       companyLabel : this.initExperience?.companyLabel != null ? this.initExperience?.companyLabel : null,
       jobTitle : '',
@@ -27,13 +31,25 @@ export class ExperienceComponent implements OnInit {
         this.formBuilder.control('')
       ])
     });
-
   }
+
+  writeValue(obj: any): void {
+        throw new Error('Method not implemented.');
+    }
+    registerOnChange(fn: any): void {
+        throw new Error('Method not implemented.');
+    }
+    registerOnTouched(fn: any): void {
+        throw new Error('Method not implemented.');
+    }
 
   ngOnInit(): void{
     console.log('init expe');
     this.initFormGroup();
     this.addNPlus1Duty();
+    // @ts-ignore
+    this.formParent.addControl('', this.formGroup);
+    this.formGroup.setParent(this.formParent);
   }
 
   initFormGroup(): void{
@@ -81,35 +97,6 @@ export class ExperienceComponent implements OnInit {
     });
   }
 
-  onSubmit(): void {
-    if (this.formGroup.valid) {
-      const duties: IDuty[] = this.getDutiesControls()
-        .filter(x => x.value)
-        .map(x => new Duty(x.value))
-        .reduce((acc, currentValue) => {
-          if (acc.indexOf(currentValue) === -1) {
-            acc.push(currentValue);
-          }
-          return acc;
-        }, new Array());
 
-
-
-      const exp: IExperience = new Experience(
-        null,
-        this.formGroup.get('companyLabel')?.value,
-        new Array(),
-        this.formGroup.get('from')?.value,
-        this.formGroup.get('to')?.value,
-        null,
-        this.formGroup.get('jobTitle')?.value
-      );
-      this.experience.emit(exp);
-      console.log(exp);
-    }else{
-      console.log('not valide');
-    }
-    console.log(this.formGroup);
-  }
 
 }

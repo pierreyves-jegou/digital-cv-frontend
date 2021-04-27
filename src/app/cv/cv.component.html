@@ -1,4 +1,10 @@
+<form [formGroup]="form" class="cv-form" (ngSubmit)="onSubmit()">
 <div *ngFor="let item of experiences| async; let i = index;">
-  <app-experience [initExperience]="item" ></app-experience>
+  <app-experience [initExperience]="item" [formParent]="form" ></app-experience>
 </div>
-
+<div>
+  <button matIconButton type="submit">
+    <mat-icon>play_arrow</mat-icon>
+  </button>
+</div>
+</form>

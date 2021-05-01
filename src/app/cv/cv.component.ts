@@ -1,16 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {IExperience} from '../model/IExperience';
 import {ICv} from '../model/ICv';
 import {Cv} from '../model/impl/cv';
 import {Experience} from '../model/impl/experience';
-import {IDuty} from '../model/IDuty';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {ActivatedRoute, ParamMap} from '@angular/router';
-import { of } from 'rxjs';
 import { map, filter, mergeMap, defaultIfEmpty, tap} from 'rxjs/operators';
 import {CvService} from '../cv.service';
-import {Duty} from '../model/impl/duty';
 
 @Component({
   selector: 'app-cv',
@@ -20,15 +17,14 @@ import {Duty} from '../model/impl/duty';
 export class CvComponent implements OnInit {
 
   @Input() cv!: ICv;
-  experiences: Observable<IExperience[]>;
-  defaultJobTitle = 'Balayeur';
+  experiences: IExperience[] = new Array();
+  experiencesSubject$: BehaviorSubject<Array<IExperience>> = new BehaviorSubject<IExperience[]>(new Array());
   form: FormGroup;
 
-  constructor(private route: ActivatedRoute, private cvService: CvService) {
-    this.form = new FormBuilder().group({});
-    console.log('parent form' + this.form);
-    console.log(this.form);
-    this.experiences = this.loadCv();
+  constructor(private route: ActivatedRoute, private cvService: CvService, private formBuilder: FormBuilder) {
+    this.form = this.formBuilder.group({
+      experiencesForm : this.formBuilder.array([])
+    });
   }
 
   loadCv(): Observable<IExperience[]>{
@@ -55,18 +51,43 @@ export class CvComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.experiencesSubject$.subscribe(exps => {
+      console.log('emet');
+      console.log(exps);
+    });
+
+    this.loadCv().subscribe(exps => {
+      this.experiences = exps;
+      const formExp = this.form.get('experiencesForm') as FormArray;
+      exps.forEach(exp => formExp.push(this.formBuilder.control({
+        companyLabel: exp.companyLabel,
+        jobTitle: exp.jobTitleLabel,
+        from: exp.from,
+        to: exp.to,
+        duties: exp.duties
+      }, [Validators.required])));
+      this.experiencesSubject$.next(exps);
+    });
   }
 
-  test($event: any): void{
-    console.log('parent');
-    console.log($event);
-    console.log('fin parent');
-  }
 
+
+  addExperience(position: number): void {
+    this.experiences.splice(position , 0, new Experience(null, null, new Array(), null, null, null, ''));
+    console.log(this.experiences);
+    this.experiencesSubject$.next(this.experiences);
+  }
 
   onSubmit(): void {
-    console.log('valid' + this.form.valid);
-    console.log(this.form);
+    if (this.form.valid){
+      const expForms = this.form.get('experiencesForm') as FormArray;
+      expForms.controls.forEach(expForm => {
+        console.log(expForm.value.companyLabel);
+      });
+    }
   }
 
+  deleteExperience(position: number): void {
+    console.log('delete' + position);
+  }
 }

@@ -15,3 +15,23 @@
 .example-full-width {
   width: 100%;
 }
+
+
+.mr-0 {
+  margin-right: 0;
+}
+
+.mr-50 {
+  margin-right: 50px;
+}
+
+.ml-auto {
+  margin-left:auto;
+}
+.d-block {
+  display:block;
+}
+
+.child{
+  border: black; border-width: 5px; border-style: solid; width: 500px;
+}

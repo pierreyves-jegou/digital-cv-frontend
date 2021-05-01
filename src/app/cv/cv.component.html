@@ -1,10 +1,23 @@
 <form [formGroup]="form" class="cv-form" (ngSubmit)="onSubmit()">
-<div *ngFor="let item of experiences| async; let i = index;">
-  <app-experience [initExperience]="item" [formParent]="form" ></app-experience>
-</div>
-<div>
-  <button matIconButton type="submit">
-    <mat-icon>play_arrow</mat-icon>
-  </button>
-</div>
+
+  <div style="padding-top: 75px">
+    <div fxLayout="column" fxLayoutGap="100px" >
+      <div *ngFor="let item of experiencesSubject$ | async; let i = index;" formArrayName="experiencesForm">
+        <app-experience [formControlName]="i"></app-experience>
+        <div fxLayout="row" fxLayoutAlign="end center" class="center-1000">
+          <button mat-button (click)="deleteExperience(i)">
+            <span>Delete experience</span>
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button mat-button (click)="addExperience(i)">
+            <span>Add experience</span>
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="center-1000" style="padding-top: 40px">
+      <button mat-raised-button color="primary" type="submit" class="d-block mr-50 ml-auto">Submit</button>
+    </div>
+  </div>
 </form>

@@ -12,24 +12,35 @@ import {MatInputModule} from '@angular/material/input';
 import { ProfileComponent } from './profil/profile.component';
 import { ExperienceComponent } from './experience/experience.component';
 import {MatIconModule} from '@angular/material/icon';
-
+import {MatButtonModule} from '@angular/material/button';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import {MatMenuModule} from '@angular/material/menu';
+import { HeaderComponent } from './header/header.component';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatCardModule} from '@angular/material/card';
 
 @NgModule({
   declarations: [
     AppComponent,
     CvComponent,
     ProfileComponent,
-    ExperienceComponent
+    ExperienceComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatSliderModule,
     ReactiveFormsModule,
+    MatSliderModule,
     MatFormFieldModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
+    MatButtonModule,
+    FlexLayoutModule,
+    MatMenuModule,
+    MatToolbarModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

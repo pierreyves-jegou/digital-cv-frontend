@@ -17,13 +17,10 @@ import {CvService} from '../cv.service';
 export class CvComponent implements OnInit {
 
   @Input() cv!: ICv;
-  experiences: IExperience[] = new Array();
-  experiencesSubject$: BehaviorSubject<Array<IExperience>> = new BehaviorSubject<IExperience[]>(new Array());
   form: FormGroup;
 
   constructor(private route: ActivatedRoute, private cvService: CvService, private formBuilder: FormBuilder) {
     this.form = this.formBuilder.group({
-      experiencesForm : this.formBuilder.array([])
     });
   }
 
@@ -40,7 +37,7 @@ export class CvComponent implements OnInit {
       }),
       // @ts-ignore
       mergeMap((id: string, index: number) => {
-        const exp: Experience[] = [new Experience(null, null, new Array(), null, null, null, null)];
+        const exp: Experience[] = [Experience.emptyExperience()];
         const cv: Cv = new Cv(exp, null);
         return this.cvService.getById(+id)?.pipe(defaultIfEmpty(cv));
       }),
@@ -51,32 +48,9 @@ export class CvComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.experiencesSubject$.subscribe(exps => {
-      console.log('emet');
-      console.log(exps);
-    });
-
-    this.loadCv().subscribe(exps => {
-      this.experiences = exps;
-      const formExp = this.form.get('experiencesForm') as FormArray;
-      exps.forEach(exp => formExp.push(this.formBuilder.control({
-        companyLabel: exp.companyLabel,
-        jobTitle: exp.jobTitleLabel,
-        from: exp.from,
-        to: exp.to,
-        duties: exp.duties
-      }, [Validators.required])));
-      this.experiencesSubject$.next(exps);
-    });
   }
 
 
-
-  addExperience(position: number): void {
-    this.experiences.splice(position , 0, new Experience(null, null, new Array(), null, null, null, ''));
-    console.log(this.experiences);
-    this.experiencesSubject$.next(this.experiences);
-  }
 
   onSubmit(): void {
     if (this.form.valid){
@@ -87,7 +61,5 @@ export class CvComponent implements OnInit {
     }
   }
 
-  deleteExperience(position: number): void {
-    console.log('delete' + position);
-  }
+
 }

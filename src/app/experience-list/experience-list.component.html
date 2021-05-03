@@ -1,0 +1,15 @@
+<div fxLayout="column" fxLayoutGap="30px">
+  <div *ngFor="let item of experiences; let i = index" >
+    <app-experience [experience]="item"></app-experience>
+    <div fxLayout="row" fxLayoutAlign="end center" class="center-1000">
+      <button mat-button (click)="deleteExperience(i)">
+        <span>Delete experience</span>
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button mat-button (click)="addExperience(i)">
+        <span>Add experience</span>
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

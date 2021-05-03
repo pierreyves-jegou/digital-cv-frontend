@@ -3,48 +3,46 @@
     <mat-card-title>
       {{getTitle()}}
     </mat-card-title>
-  <div fxLayout="column">
-    <div fxLayout="row wrap" fxLayoutAlign="space-between center" fxLayoutGap="20px">
-      <mat-form-field>
-        <mat-label>from</mat-label>
-        <input matInput type="date" formControlName="from" >
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>to</mat-label>
-        <input matInput type="date" formControlName="to" >
-      </mat-form-field>
-    </div>
-    <mat-form-field>
-      <mat-label>Company</mat-label>
-      <input matInput type="text" formControlName="companyLabel" >
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>job title</mat-label>
-      <input matInput type="text" formControlName="jobTitle" >
-    </mat-form-field>
-
-    <ul>
-      <div formArrayName="duties" *ngFor="let item of getDutiesControls(); let i = index;">
-          <li>
-          <mat-form-field style="width: 90%">
-                <mat-label>duty</mat-label>
-                <input matInput type="text" [formControlName]="i" >
-              </mat-form-field>
-
-          <div style="display: inline-block">
-            <button mat-button>
-              <mat-icon (click)="addDuty(i)">add</mat-icon>
-            </button>
-            <div *ngIf="this.getDutiesControls().length > 1" >
-              <button mat-button>
-                <mat-icon (click)="removeDuty(i)">delete</mat-icon>
-              </button>
-            </div>
+    <mat-card-content>
+      <div fxLayout="column">
+        <div fxLayout="row wrap" fxLayoutAlign="space-between center" fxLayoutGap="20px">
+          <mat-form-field>
+            <mat-label>from</mat-label>
+            <input matInput type="date" formControlName="from" >
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>to</mat-label>
+            <input matInput type="date" formControlName="to" >
+          </mat-form-field>
+        </div>
+        <mat-form-field>
+          <mat-label>Company</mat-label>
+          <input matInput type="text" formControlName="companyLabel" >
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>job title</mat-label>
+          <input matInput type="text" formControlName="jobTitle" >
+        </mat-form-field>
+        <ul>
+          <div formArrayName="duties" *ngFor="let item of getDutiesControls(); let i = index;">
+              <li fxLayout="row">
+                <mat-form-field style="width: 80%">
+                    <mat-label>duty</mat-label>
+                    <input matInput type="text" [formControlName]="i" >
+                </mat-form-field>
+                <div>
+                  <button mat-button>
+                    <mat-icon (click)="addDuty(i)">add</mat-icon>
+                  </button>
+                  <button mat-button *ngIf="this.getDutiesControls().length > 1">
+                    <mat-icon (click)="removeDuty(i)">delete</mat-icon>
+                  </button>
+                </div>
+              </li>
           </div>
-          </li>
+        </ul>
       </div>
-    </ul>
-  </div>
+    </mat-card-content>
   </mat-card>
 
 </form>

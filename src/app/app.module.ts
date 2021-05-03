@@ -18,6 +18,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import { HeaderComponent } from './header/header.component';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatCardModule} from '@angular/material/card';
+import { ExperienceListComponent } from './experience-list/experience-list.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import {MatCardModule} from '@angular/material/card';
     CvComponent,
     ProfileComponent,
     ExperienceComponent,
-    HeaderComponent
+    HeaderComponent,
+    ExperienceListComponent
   ],
   imports: [
     BrowserModule,

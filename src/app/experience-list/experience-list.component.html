@@ -1,5 +1,5 @@
-<form (ngSubmit)="test()" [formGroup]="formExperiences">
-<div fxLayout="column" fxLayoutGap="30px" >
+<form [formGroup]="formExperiences">
+  <div fxLayout="column" fxLayoutGap="30px" >
   <div formArrayName="elements">
     <div *ngFor="let control of this.elements.controls; let i = index">
       <app-experience [formControlName]="i"></app-experience>
@@ -15,8 +15,5 @@
       </div>
     </div>
   </div>
-</div>
-<div class="center-1000" style="padding-top: 40px">
-  <button mat-raised-button color="primary" type="submit" class="d-block mr-50 ml-auto">Submit</button>
 </div>
 </form>

@@ -9,7 +9,7 @@ import {
   NG_VALUE_ACCESSOR,
   Validators,
   Validator,
-  ValidationErrors
+  ValidationErrors, RequiredValidator
 } from '@angular/forms';
 import {Experience} from '../model/impl/experience';
 import {Duty} from '../model/impl/duty';
@@ -43,7 +43,7 @@ export class ExperienceComponent implements OnInit, ControlValueAccessor, OnDest
     this.formExperience = this.formBuilder.group({
       id: null,
       companyLabel: '',
-      jobTitle: '',
+      jobTitleLabel: '',
       from: ['', Validators.required],
       to: [''],
       duties: this.formBuilder.array([])
@@ -58,40 +58,35 @@ export class ExperienceComponent implements OnInit, ControlValueAccessor, OnDest
   }
 
   registerOnChange(fn: any): void {
-    console.log('on change');
-    console.log(fn);
     this.formExperience.valueChanges.subscribe(fn);
   }
 
   onTouched: any = () => {};
   registerOnTouched(fn: any): void {
-    console.log('registerOnTouched');
-    console.log(fn);
     this.onTouched = fn;
   }
 
   writeValue(obj: Experience): void {
     this.formExperience.get('id')?.setValue(obj.id);
     this.formExperience.get('companyLabel')?.setValue(obj.companyLabel);
-    this.formExperience.get('jobTitle')?.setValue(obj.jobTitleLabel);
+    this.formExperience.get('jobTitleLabel')?.setValue(obj.jobTitleLabel);
     this.formExperience.get('from')?.setValue(obj.from);
     this.formExperience.get('to')?.setValue(obj.to);
     const dutiesFormArray = this.formExperience.get('duties') as FormArray;
     if (obj.duties && obj.duties.length > 0){
       obj.duties.forEach(duty => {
-        dutiesFormArray.push(this.formBuilder.control(duty.detail));
+        const formGroup = this.formBuilder.group({description : this.formBuilder.control(duty.description)});
+        dutiesFormArray.push(formGroup);
       });
     }else{
-      dutiesFormArray.push(this.formBuilder.control(Duty.emptyDuty().detail));
+      const formGroup = this.formBuilder.group({description : this.formBuilder.control('')});
+      dutiesFormArray.push(formGroup);
     }
-
-    console.log(this.formExperience.getRawValue());
   }
 
   addDuty(position: number): void{
     const dutiesControls = this.getDutiesControls();
-    dutiesControls.splice(position + 1, 0, this.formBuilder.control(''));
-    console.log(position);
+    dutiesControls.splice(position + 1, 0, this.formBuilder.group({description : this.formBuilder.control('')}));
   }
 
   removeDuty(position: number): void{
@@ -124,15 +119,16 @@ export class ExperienceComponent implements OnInit, ControlValueAccessor, OnDest
       titleValues.push(this.formExperience.get('companyLabel')?.value);
     }
 
-    if (this.formExperience.get('jobTitle')?.value){
-      titleValues.push(this.formExperience.get('jobTitle')?.value);
+    if (this.formExperience.get('jobTitleLabel')?.value){
+      titleValues.push(this.formExperience.get('jobTitleLabel')?.value);
     }
 
     return titleValues.join(' - ');
   }
 
   validate(c: AbstractControl): ValidationErrors | null{
-    console.log('sic Info validation', c);
+    // console.log('validate de ExperienceComponent');
+    // console.log(this.formExperience.valid ? null : { invalidForm: {valid: false, message: 'basicInfoForm fields are invalid'}});
     return this.formExperience.valid ? null : { invalidForm: {valid: false, message: 'basicInfoForm fields are invalid'}};
   }
 

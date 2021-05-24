@@ -4,33 +4,39 @@ import {IExperience} from './model/IExperience';
 import {Experience} from './model/impl/experience';
 import {Observable} from 'rxjs';
 import {Duty} from './model/impl/duty';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {map, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CvService {
 
-  constructor() { }
+  headers = new HttpHeaders({
+    'Access-Control-Allow-Origin': 'http://localhost:4200, http://localhost:8080',
+    'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE',
+    'Access-Control-Allow-Headers' : 'Origin, X-Requested-With, Content-Type, Accept'
+  });
 
-  getById(id: number): Observable<Cv> | null{
-    if (id === 1){
-      const experiences: IExperience[] = new Array();
+  constructor(private httpClient: HttpClient) { }
 
+  getById(id: string): Observable<Cv> | null{
+    return this.httpClient.get('http://localhost:8080/cv/' + encodeURIComponent(id), {headers: this.headers})
+      .pipe(
+        map(data => {
+          return data as Cv;
+        })
+      );
+  }
 
-      const dutyArchi: Duty = new Duty(1, 'archi');
-      experiences.push(new Experience(1, null, 'CGI', [dutyArchi], null, null, null,
-        'Dév'));
-      experiences.push(new Experience(2 , null, 'Sopra', new Array(), null, null, null,
-        'Dév'));
-      return new Observable(observer => {
-        observer.next(new Cv(experiences, null));
-        observer.complete();
-      });
-    }else{
-      return new Observable(observer => {
-        observer.complete();
-      });
-    }
+  createCv(cv: Cv): Observable<Cv>{
+    return this.httpClient.post('http://localhost:8080/cv/', cv)
+      .pipe(
+        tap(data => console.log(data)),
+        map(data => {
+          return data as Cv;
+        })
+      );
   }
 
 }

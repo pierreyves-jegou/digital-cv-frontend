@@ -1,25 +1,54 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, forwardRef, Input, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Experience} from '../model/impl/experience';
-import {ControlValueAccessor, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {
+  AbstractControl,
+  ControlValueAccessor,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR,
+  ValidationErrors,
+  Validator,
+  Validators
+} from '@angular/forms';
 
 @Component({
   selector: 'app-experience-list',
   templateUrl: './experience-list.component.html',
-  styleUrls: ['./experience-list.component.css']
+  styleUrls: ['./experience-list.component.css'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => ExperienceListComponent),
+      multi: true
+    },
+    {
+      provide: NG_VALIDATORS,
+      useExisting: forwardRef(() => ExperienceListComponent),
+      multi: true
+    }
+  ]
 })
-export class ExperienceListComponent implements OnInit, ControlValueAccessor {
+export class ExperienceListComponent implements OnInit, ControlValueAccessor, Validator {
 
   // @ts-ignore
   @Input() experiences$: Observable<Experience[]>;
   // @ts-ignore
   formExperiences: FormGroup;
+  // @Input() parentForm: FormGroup | undefined;
+
 
   constructor(private formBuilder: FormBuilder) {
     // @ts-ignore
    this.formExperiences = this.formBuilder.group({
-      elements: this.formBuilder.array([])
+      elements: this.formBuilder.array([], Validators.required)
     });
+  }
+
+  validate(control: AbstractControl): ValidationErrors | null {
+    // console.log(this.formExperiences.valid ? null : { invalidForm: {valid: false, message: 'basicInfoForm fields are invalid'}});
+    return this.formExperiences.valid ? null : { invalidForm: {valid: false, message: 'basicInfoForm fields are invalid'}};
   }
 
   registerOnChange(fn: any): void {
@@ -31,23 +60,18 @@ export class ExperienceListComponent implements OnInit, ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  writeValue(obj: any): void {
-  }
-
-  ngOnInit(): void {
-    this.ngInitExperiences();
-  }
-
-  ngInitExperiences(): void {
-    if (this.experiences$ != null){
-      this.experiences$.subscribe(exps => {
-        exps.forEach(exp => {
-          this.elements.push(this.formBuilder.control(exp));
-        });
+  writeValue(exps: Experience[]): void {
+    this.elements.clear();
+    if (exps && exps.length > 0){
+      exps.forEach(exp => {
+        this.elements.push(this.formBuilder.control(exp));
       });
     }else{
       this.elements.push(this.formBuilder.control(Experience.emptyExperience()));
     }
+  }
+
+  ngOnInit(): void {
   }
 
   addExperience(position: number): void {
@@ -61,10 +85,4 @@ export class ExperienceListComponent implements OnInit, ControlValueAccessor {
   get elements(): FormArray{
     return this.formExperiences.get('elements') as FormArray;
   }
-
-  test(): void {
-    console.log(this.formExperiences);
-    console.log(this.formExperiences.getRawValue());
-  }
-
 }

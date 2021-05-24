@@ -3,7 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 import {CvComponent} from './cv/cv.component';
 
 const routes: Routes = [
+  { path: 'cv/new', component: CvComponent },
   { path: 'cv/:id', component: CvComponent }
+
 ];
 
 @NgModule({

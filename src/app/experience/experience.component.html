@@ -21,14 +21,14 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label>job title</mat-label>
-          <input matInput type="text" formControlName="jobTitle" >
+          <input matInput type="text" formControlName="jobTitleLabel" >
         </mat-form-field>
         <ul>
           <div formArrayName="duties" *ngFor="let item of getDutiesControls(); let i = index;">
               <li fxLayout="row">
-                <mat-form-field style="width: 80%">
+                <mat-form-field style="width: 80%" [formGroup]="item">
                     <mat-label>duty</mat-label>
-                    <input matInput type="text" [formControlName]="i" >
+                    <input matInput type="text" formControlName="description" >
                 </mat-form-field>
                 <div>
                   <button mat-button>
